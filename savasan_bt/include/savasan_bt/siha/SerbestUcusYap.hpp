@@ -1,0 +1,13 @@
+#pragma once
+
+#include "behaviortree_cpp/action_node.h"
+#include "rclcpp/rclcpp.hpp"
+#include <string>
+
+class SerbestUcusYap : public BT::SyncActionNode
+{
+public:
+    SerbestUcusYap(const std::string& name, const BT::NodeConfig& config);
+    static BT::PortsList providedPorts();
+    BT::NodeStatus tick() override;
+};

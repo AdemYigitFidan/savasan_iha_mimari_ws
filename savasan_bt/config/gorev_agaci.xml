@@ -1,0 +1,154 @@
+<root BTCPP_format="4" main_tree_to_execute="AnaKararVerici">
+
+    <TreeNodesModel>
+        <Condition ID="HaberlesmeKoptuMu"/>
+        <Condition ID="KirmiziAlanaGirdinMi"/>
+        <Condition ID="SinirVeyaIrtifaAsildiMi"/>
+        <Condition ID="YeterliYukseklikteMi"/>
+        <Condition ID="QRKonumBilgisiGirildiMi"/>
+        <Condition ID="SavasanGoreviAktifMi"/>
+        <Condition ID="Yukseklik100mVeyaUzeriMi"/>
+        <Condition ID="QRGoruntudeMi"/>
+        <Condition ID="HedefeXKadarYaklastinMi"/>
+        <Condition ID="Yukseklik10mVeyaUzeriMi"/>
+        <Condition ID="HedefTespitEdildiMi"/>
+        <Condition ID="HedefTekrarGoruntudeMi"/>
+        <Condition ID="HedefVurusAlanindaMi"/>
+        <Condition ID="ToleransAsildiMi"/>
+        <Condition ID="Sayac4SaniyeOlduMu"/>
+        <Action ID="RTLBaslatVeCemberAt"/>
+        <Action ID="KacinmaModunaGec"/>
+        <Action ID="GuvenliBolgeyeYonel"/>
+        <Action ID="KalkisYap"/>
+        <Action ID="Yuksekligi10mArttir"/>
+        <Action ID="KonumaIlerle"/>
+        <Action ID="Yuz100mOlanaKadarTirman"/>
+        <Action ID="DalisaGec"/>
+        <Action ID="QRiOrtala"/>
+        <Action ID="KoduTaraVeKayitAl"/>
+        <Action ID="DalisiSonlandirGuvenliYuksekligeCik"/>
+        <Action ID="PaketleriSunucuyaIlet"/>
+        <Action ID="QRKonumBilgisiniTemizle"/>
+        <Action ID="DalisiSurdur"/>
+        <Action ID="OtonomInis"/>
+        <Action ID="HedefiOrtala"/>
+        <Action ID="KilitlenmeSayaciniIlerlet"/>
+        <Action ID="ToleransSayaciniIlerlet"/>
+        <Action ID="TumSayaclariSifirla"/>
+        <Action ID="KayipAlgoritmasiniBaslat"/>
+        <Action ID="HedefAramayiAktiflestir"/>
+        <Action ID="SerbestUcusYap"/>
+        <Action ID="IstasyonaPaketiGonder"/>
+        <Action ID="SonVurulanHedefiKaydet"/>
+        <Action ID="GoreviSonlandir"/>
+    </TreeNodesModel>
+
+    <BehaviorTree ID="AnaKararVerici">
+        <Fallback name="AnaKararVerici_Root">
+            <Fallback name="Kurtarma_Mekanizmalari">
+                <Sequence name="Acil_Haberlesme">
+                    <Condition ID="HaberlesmeKoptuMu"/>
+                    <Action ID="RTLBaslatVeCemberAt"/>
+                </Sequence>
+                <Sequence name="Acil_KirmiziAlan">
+                    <Condition ID="KirmiziAlanaGirdinMi"/>
+                    <Action ID="KacinmaModunaGec"/>
+                </Sequence>
+                <Sequence name="Acil_SinirIhlali">
+                    <Condition ID="SinirVeyaIrtifaAsildiMi"/>
+                    <Action ID="GuvenliBolgeyeYonel"/>
+                </Sequence>
+            </Fallback>
+            <SubTree ID="Baslangic_Ve_Gorev_Secimi"/>
+        </Fallback>
+    </BehaviorTree>
+
+    <BehaviorTree ID="Baslangic_Ve_Gorev_Secimi">
+        <Sequence name="Kalkis_Ve_Secim_Fazi">
+            <Action ID="KalkisYap"/>
+            <RetryUntilSuccessful num_attempts="-1">
+                <Fallback name="Irtifa_Kontrolu">
+                    <Condition ID="YeterliYukseklikteMi"/>
+                    <Action ID="Yuksekligi10mArttir"/>
+                </Fallback>
+            </RetryUntilSuccessful>
+            <Fallback name="Gorev_Secici">
+                    <Sequence name="Kamikaze_Dali">
+                        <Condition ID="QRKonumBilgisiGirildiMi"/>
+                        <SubTree ID="Kamikaze_Gorevi_Agaci"/>
+                    </Sequence>
+                    <SubTree ID="Siha_Gorevi_Agaci"/>
+            </Fallback>
+        </Sequence>
+    </BehaviorTree>
+
+    <BehaviorTree ID="Kamikaze_Gorevi_Agaci">
+        <Sequence name="Kamikaze_Akis">
+            <Action ID="KonumaIlerle"/>
+            <Fallback name="Tirmanma_100m">
+                <Condition ID="Yukseklik100mVeyaUzeriMi"/>
+                <Action ID="Yuz100mOlanaKadarTirman"/>
+            </Fallback>
+            <Action ID="DalisaGec"/>
+            <Fallback name="QR_Dalis_Dongusu">
+                <Sequence name="QR_Tespit_Islemleri">
+                    <Condition ID="QRGoruntudeMi"/>
+                    <Action ID="QRiOrtala"/>
+                    <Action ID="KoduTaraVeKayitAl"/>
+                    <Fallback name="Vurus_Karar">
+                        <Sequence name="Hedefe_Vurus">
+                            <Condition ID="HedefeXKadarYaklastinMi"/>
+                            <Action ID="DalisiSonlandirGuvenliYuksekligeCik"/>
+                            <Action ID="PaketleriSunucuyaIlet"/>
+                            <Action ID="QRKonumBilgisiniTemizle"/>
+                        </Sequence>
+                        <Action ID="DalisiSurdur"/>
+                    </Fallback>
+                </Sequence>
+                <Sequence name="QR_Yok_Dalis_Kontrol">
+                    <Condition ID="Yukseklik10mVeyaUzeriMi"/>
+                    <Action ID="DalisiSurdur"/>
+                </Sequence>
+                <Action ID="OtonomInis"/>
+            </Fallback>
+        </Sequence>
+    </BehaviorTree>
+
+    <BehaviorTree ID="Siha_Gorevi_Agaci">
+        <Fallback name="Siha_Ana_Akis">
+            <Sequence name="Kilitlenme_Tamamlandi">
+                <Condition ID="Sayac4SaniyeOlduMu"/>
+                <Action ID="IstasyonaPaketiGonder"/>
+                <Action ID="SonVurulanHedefiKaydet"/>
+                <Action ID="TumSayaclariSifirla"/>
+                <Action ID="GoreviSonlandir"/>
+            </Sequence>
+            <Fallback name="Tespit_Ve_Takip">
+                <Sequence name="Hedef_Takip">
+                    <Fallback name="Tespit_Kontrolu">
+                        <Condition ID="HedefTespitEdildiMi"/>
+                        <Condition ID="HedefTekrarGoruntudeMi"/>
+                    </Fallback>
+                    <Action ID="HedefiOrtala"/>
+                    <Fallback name="Kilit_Mekanizmasi">
+                        <Sequence name="Kilit_Artir">
+                            <Condition ID="HedefVurusAlanindaMi"/>
+                            <Action ID="KilitlenmeSayaciniIlerlet"/>
+                        </Sequence>
+                        <Sequence name="Tolerans_Yonetimi">
+                            <Action ID="ToleransSayaciniIlerlet"/>
+                            <Condition ID="ToleransAsildiMi"/>
+                            <Action ID="TumSayaclariSifirla"/>
+                            <Action ID="KayipAlgoritmasiniBaslat"/>
+                        </Sequence>
+                    </Fallback>
+                </Sequence>
+                <Sequence name="Standart_Arama">
+                    <Action ID="HedefAramayiAktiflestir"/>
+                    <Action ID="SerbestUcusYap"/>
+                </Sequence>
+            </Fallback>
+        </Fallback>
+    </BehaviorTree>
+
+</root>
